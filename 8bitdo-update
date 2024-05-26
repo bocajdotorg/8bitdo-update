@@ -1,0 +1,7 @@
+#!/bin/bash
+# Created from these instructions https://ladis.cloud/blog/posts/firmware-update-8bitdo.html
+filePathName=$(curl -X POST -H 'Type: 9' -H 'Beta: 1' http://dl.8bitdo.com:8080/firmware/select | jq -r '.list |= max_by(.version|tonumber) | .list.filePathName')
+fileName=$(basename $filePathName)
+curl -X GET -O http://dl.8bitdo.com:8080${filePathName}
+deviceId=$(fwupdmgr get-devices --json | jq -r '.Devices[] | select(.Vendor == "8BitDo") | .DeviceId')
+sudo fwupdtool install-blob $fileName $deviceId
